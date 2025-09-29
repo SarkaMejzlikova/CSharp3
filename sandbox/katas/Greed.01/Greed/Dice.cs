@@ -6,7 +6,6 @@ public class Dice
 {
     public bool ExtraCredit { get; set; }
     private int[] RandomDice { get; set; } = new int[5];
-    // counts for die faces 1..6 -> needs length 6
     private int[] NumbersOnDice { get; set; } = new int[6];
 
     private int score;
@@ -16,7 +15,6 @@ public class Dice
     {
         ExtraCredit = extraCredit;
         GetRandomDice();
-        // compute initial score so Result() prints the correct value
         GetScore();
     }
 
@@ -31,7 +29,6 @@ public class Dice
         Array.Clear(NumbersOnDice, 0, NumbersOnDice.Length);
         foreach (int die in RandomDice)
         {
-            // defensive check to avoid out-of-range access
             if (die >= 1 && die <= NumbersOnDice.Length)
             {
                 NumbersOnDice[die - 1]++;

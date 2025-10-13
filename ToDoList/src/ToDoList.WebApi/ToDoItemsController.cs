@@ -9,18 +9,52 @@ using ToDoList.Domain.Models;
 public class ToDoItemsController : ControllerBase
 {
 
-    private static List<ToDoItem> items = [];
+    // in-memory storage for the demo
+    private static readonly List<ToDoItem> items = [];
 
     [HttpPost]
     public IActionResult Create(ToDoItemCreateRequestDto request) // použijeme DTO - Data Transfer Object
     {
-        return Ok(); // response 200
+        // map to Domain object as soon as possible
+        var item = request.ToDomain();
+
+        try
+        {
+            item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
+            items.Add(item);
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); // 500
+        }
+
+        // 201
+        return CreatedAtAction(
+            nameof(ReadById),
+            new { toDoItemId = item.ToDoItemId },
+            ToDoItemGetResponseDto.FromDomain(item)
+        );
     }
 
     [HttpGet]
     public IActionResult Read()
     {
-        return Ok();
+        try
+        {
+            if (items is null)
+            {
+                return NotFound(); // 404 when the list itself is null
+            }
+
+            // map domain objects to DTOs
+            var result = items.Select(ToDoItemGetResponseDto.FromDomain).ToList();
+
+            return Ok(result); // 200
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+        }
     }
 
     // prostá metoda HttpGet se nemůže použít dvakrát. Musí se do dalšího dát "parametr"
@@ -29,11 +63,19 @@ public class ToDoItemsController : ControllerBase
     {
         try
         {
-            throw new Exception("Neco se opravdu nepovedlo.");
+            // find the item by id
+            var item = items.Find(i => i.ToDoItemId == toDoItemId);
+
+            if (item is null)
+            {
+                return NotFound(); // 404 when item doesn't exist
+            }
+
+            var dto = ToDoItemGetResponseDto.FromDomain(item);
+            return Ok(dto); // 200 with the DTO
         }
         catch (Exception ex)
         {
-            // místo ok vracím problém
             return Problem(ex.Message, null, StatusCodes.Status500InternalServerError); // 500
         }
     }
@@ -41,12 +83,52 @@ public class ToDoItemsController : ControllerBase
     [HttpPut("{toDoItemId:int}")]
     public IActionResult UpdateById(int toDoItemId, [FromBody] ToDoItemUpdateRequestDto request)
     {
-        return Ok();
+        try
+        {
+            // create updated domain instance from DTO
+            var updatedItem = request.ToDomain();
+
+            // find index of existing item
+            var index = items.FindIndex(i => i.ToDoItemId == toDoItemId);
+
+            if (index == -1)
+            {
+                return NotFound(); // 404 if item not found
+            }
+
+            // preserve the id
+            updatedItem.ToDoItemId = toDoItemId;
+
+            // replace at index
+            items[index] = updatedItem;
+
+            return NoContent(); // 204
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpDelete("{toDoItemId:int}")]
     public IActionResult DeleteById(int toDoItemId)
     {
-        return Ok();
+        try
+        {
+            var item = items.Find(i => i.ToDoItemId == toDoItemId);
+
+            if (item is null)
+            {
+                return NotFound(); // 404 if not found
+            }
+
+            items.Remove(item);
+
+            return NoContent(); // 204
+        }
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+        }
     }
 }

@@ -1,13 +1,13 @@
 namespace ToDoList.Test;
 
-using Xunit;
 using ToDoList.Domain.Models;
 using ToDoList.WebApi;
+using Xunit;
 
 public class GetTests
 {
     [Fact]
-    public void Get_AllItems_ReturnsAllItems()
+        public void Get_AllItems_ReturnsAllItems()
     {
         // Arrange
         var todoItem1 = new ToDoItem
@@ -17,21 +17,18 @@ public class GetTests
             Description = "Popis1",
             IsCompleted = false
         };
-
         var todoItem2 = new ToDoItem
         {
             ToDoItemId = 2,
             Name = "Jmeno2",
             Description = "Popis2",
-            IsCompleted = false
+            IsCompleted = true
         };
-
         var controller = new ToDoItemsController();
         controller.AddItemToStorage(todoItem1);
         controller.AddItemToStorage(todoItem2);
 
         // Act
-        // v kontroleru je pro dostání všech položek metoda Read
         var result = controller.Read();
         var value = result.GetValue();
 
@@ -39,9 +36,24 @@ public class GetTests
         Assert.NotNull(value);
 
         var firstToDo = value.First();
-        Assert.Equal(1, firstToDo.Id);
-        Assert.Equal("Jmeno1", firstToDo.Name);
-        Assert.Equal("Popis1", firstToDo.Description);
-        Assert.Equal(false, firstToDo.IsCompleted);
+        Assert.Equal(todoItem1.ToDoItemId, firstToDo.Id);
+        Assert.Equal(todoItem1.Name, firstToDo.Name);
+        Assert.Equal(todoItem1.Description, firstToDo.Description);
+        Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
+    }
+
+
+    [Fact]
+    public void DeleteTest()
+    {
+        //ToDoItemsController.items.Clear(); // je důležité před každým testem vyčistit "databázi"
+
+        var controller = new ToDoItem
+        {
+            ToDoItemId = 1,
+            Name = "Jmeno1",
+            Description = "Popis1",
+            IsCompleted = false
+        };
     }
 }

@@ -8,5 +8,10 @@ namespace ToDoList.Domain.DTOs;
 // parametry pošle klient
 public record ToDoItemCreateRequestDto(string Name, string Description, bool IsCompleted)
 {
-    public ToDoItem ToDomain() => new() { Name = Name, Description = Description, IsCompleted = IsCompleted };
+    public ToDoItem ToDomain() => new()
+    {
+        Name = Name,
+        Description = Description,
+        IsCompleted = IsCompleted
+    };
 }

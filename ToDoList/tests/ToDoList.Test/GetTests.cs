@@ -7,7 +7,7 @@ using Xunit;
 public class GetTests
 {
     [Fact]
-        public void Get_AllItems_ReturnsAllItems()
+    public void Get_AllItems_ReturnsAllItems()
     {
         // Arrange
         var todoItem1 = new ToDoItem
@@ -40,20 +40,5 @@ public class GetTests
         Assert.Equal(todoItem1.Name, firstToDo.Name);
         Assert.Equal(todoItem1.Description, firstToDo.Description);
         Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
-    }
-
-
-    [Fact]
-    public void DeleteTest()
-    {
-        //ToDoItemsController.items.Clear(); // je důležité před každým testem vyčistit "databázi"
-
-        var controller = new ToDoItem
-        {
-            ToDoItemId = 1,
-            Name = "Jmeno1",
-            Description = "Popis1",
-            IsCompleted = false
-        };
     }
 }

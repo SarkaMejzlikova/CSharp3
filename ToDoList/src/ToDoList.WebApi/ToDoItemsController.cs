@@ -8,7 +8,7 @@ using ToDoList.Domain.Models;
 [ApiController]
 public class ToDoItemsController : ControllerBase
 {
-    private static readonly List<ToDoItem> items = [];
+    public static readonly List<ToDoItem> items = new List<ToDoItem>();
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)

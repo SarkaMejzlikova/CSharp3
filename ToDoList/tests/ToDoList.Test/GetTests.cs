@@ -42,18 +42,4 @@ public class GetTests
         Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
     }
 
-
-    [Fact]
-    public void DeleteTest()
-    {
-        //ToDoItemsController.items.Clear(); // je důležité před každým testem vyčistit "databázi"
-
-        var controller = new ToDoItem
-        {
-            ToDoItemId = 1,
-            Name = "Jmeno1",
-            Description = "Popis1",
-            IsCompleted = false
-        };
-    }
 }

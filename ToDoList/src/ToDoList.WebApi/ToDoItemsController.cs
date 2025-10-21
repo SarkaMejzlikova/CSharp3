@@ -1,14 +1,33 @@
 namespace ToDoList.WebApi;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence;
 
 [Route("api/[controller]")] //localhost:5000/api/ToDoItems
 [ApiController]
 public class ToDoItemsController : ControllerBase
 {
-    private static readonly List<ToDoItem> items = [];
+    //private static readonly List<ToDoItem> items = []; // již není potřeba
+    private readonly ToDoItemsContext context;
+
+    // constructor
+    public ToDoItemsController(ToDoItemsContext context)
+    {
+        this.context = context;
+
+        ToDoItem item = new ToDoItem
+        {
+            Name = "Prvni ukol",
+            Description = "Prvni popisek",
+            IsCompleted = false
+        };
+
+        context.ToDoItems.Add(item); // context - přidat do tabulky - ukol. Jenom se zacachuje
+        context.SaveChanges(); // uloží se do tabulky
+    }
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -19,8 +38,10 @@ public class ToDoItemsController : ControllerBase
         //try to create an item
         try
         {
-            item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
-            items.Add(item);
+            // item.ToDoItemId = items.Count == 0 ? 1 : items.Max(o => o.ToDoItemId) + 1;
+            // items.Add(item);
+            context.ToDoItems.Add(item);
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
@@ -40,7 +61,10 @@ public class ToDoItemsController : ControllerBase
         List<ToDoItem> itemsToGet;
         try
         {
-            itemsToGet = items;
+            //itemsToGet = items;
+            itemsToGet = context.ToDoItems
+                .AsNoTracking()
+                .ToList();
         }
         catch (Exception ex)
         {
@@ -60,7 +84,10 @@ public class ToDoItemsController : ControllerBase
         ToDoItem? itemToGet;
         try
         {
-            itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
+            //itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
+            itemToGet = context.ToDoItems
+                .AsNoTracking()
+                .FirstOrDefault(i => i.ToDoItemId == toDoItemId);
         }
         catch (Exception ex)
         {
@@ -83,13 +110,21 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //retrieve the item
-            var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
+            //var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
+            int itemIndexToUpdate = context.ToDoItems
+                .AsNoTracking()
+                .ToList()
+                .FindIndex(i => i.ToDoItemId == toDoItemId);
+
             if (itemIndexToUpdate == -1)
             {
                 return NotFound(); //404
             }
             updatedItem.ToDoItemId = toDoItemId;
-            items[itemIndexToUpdate] = updatedItem;
+
+            //items[itemIndexToUpdate] = updatedItem;
+            context.ToDoItems.Update(updatedItem);
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
@@ -106,12 +141,17 @@ public class ToDoItemsController : ControllerBase
         //try to delete the item
         try
         {
-            var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
+            //var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
+            var itemToDelete = context.ToDoItems
+                .FirstOrDefault(i => i.ToDoItemId == toDoItemId);
+
             if (itemToDelete is null)
             {
                 return NotFound(); //404
             }
-            items.Remove(itemToDelete);
+            //items.Remove(itemToDelete);
+            context.ToDoItems.Remove(itemToDelete);
+            context.SaveChanges();
         }
         catch (Exception ex)
         {
@@ -124,6 +164,8 @@ public class ToDoItemsController : ControllerBase
 
     public void AddItemToStorage(ToDoItem item)
     {
-        items.Add(item);
+        //items.Add(item);
+        context.ToDoItems.Add(item);
+        context.SaveChanges();
     }
 }

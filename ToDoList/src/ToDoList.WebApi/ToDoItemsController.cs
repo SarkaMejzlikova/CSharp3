@@ -126,4 +126,9 @@ public class ToDoItemsController : ControllerBase
     {
         items.Add(item);
     }
+
+    public static void ClearStorage()
+    {
+        items.Clear();
+    }
 }

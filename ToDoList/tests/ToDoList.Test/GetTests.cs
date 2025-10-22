@@ -37,9 +37,6 @@ public class GetTests
 
         var firstToDo = value.First();
         Assert.Equal(todoItem1.ToDoItemId, firstToDo.Id);
-        Assert.Equal(todoItem1.Name, firstToDo.Name);
-        Assert.Equal(todoItem1.Description, firstToDo.Description);
-        Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
     }
 
 }

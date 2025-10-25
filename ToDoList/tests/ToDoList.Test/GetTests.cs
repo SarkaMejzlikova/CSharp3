@@ -1,13 +1,15 @@
 namespace ToDoList.Test;
 
+using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.WebApi;
 using Xunit;
 
+[Collection("Sequential")]
 public class GetTests
 {
     [Fact]
-        public void Get_AllItems_ReturnsAllItems()
+    public void Get_AllItems_ReturnsAllItems()
     {
         // Arrange
         var todoItem1 = new ToDoItem
@@ -25,6 +27,7 @@ public class GetTests
             IsCompleted = true
         };
         var controller = new ToDoItemsController();
+        controller.ClearStorage();
         controller.AddItemToStorage(todoItem1);
         controller.AddItemToStorage(todoItem2);
 
@@ -37,6 +40,8 @@ public class GetTests
 
         var firstToDo = value.First();
         Assert.Equal(todoItem1.ToDoItemId, firstToDo.Id);
+        Assert.Equal(todoItem1.Name, firstToDo.Name);
+        Assert.Equal(todoItem1.Description, firstToDo.Description);
+        Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
     }
-
 }

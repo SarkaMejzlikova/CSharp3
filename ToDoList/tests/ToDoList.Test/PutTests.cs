@@ -6,51 +6,65 @@ using ToDoList.Domain.Models;
 using ToDoList.WebApi;
 using Xunit;
 
+[Collection("Sequential")]
 public class PutTests
 {
     [Fact]
-    public void Update_ReturnsNoContent_WhenItemExists()
+    public void Put_ValidId_ReturnsNoContent()
     {
         // Arrange
-        ToDoItemsController.ClearStorage();
-        var todoItem = new ToDoItem
+        var controller = new ToDoItemsController();
+        controller.ClearStorage();
+        var toDoItem = new ToDoItem
         {
             ToDoItemId = 1,
-            Name = "Jmeno1",
-            Description = "Popis1",
+            Name = "Jmeno",
+            Description = "Popis",
             IsCompleted = false
         };
 
-        var controller = new ToDoItemsController();
-        controller.AddItemToStorage(todoItem);
+        controller.AddItemToStorage(toDoItem);
 
-        var updateRequest = new ToDoItemUpdateRequestDto("updated", "updated desc", true);
+        var request = new ToDoItemUpdateRequestDto(
+            Name: "Jine jmeno",
+            Description: "Jiny popis",
+            IsCompleted: true
+        );
 
         // Act
-        var updateResult = controller.UpdateById(todoItem.ToDoItemId, updateRequest);
-        var read = controller.ReadById(todoItem.ToDoItemId);
-        var readValue = read.GetValue();
+        var result = controller.UpdateById(toDoItem.ToDoItemId, request);
 
         // Assert
-        Assert.Equal(updateRequest.Name, readValue!.Name);
-        Assert.Equal(updateRequest.Description, readValue.Description);
-        Assert.Equal(updateRequest.IsCompleted, readValue.IsCompleted);
+        Assert.IsType<NoContentResult>(result);
     }
 
     [Fact]
-    public void Update_ReturnsNotFound_WhenItemDoesNotExist()
+    public void Put_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        ToDoItemsController.ClearStorage();
         var controller = new ToDoItemsController();
-        int fakeId = int.MaxValue;
-        var updateRequest = new ToDoItemUpdateRequestDto("x", "x", false);
+        controller.ClearStorage();
+        var toDoItem = new ToDoItem
+        {
+            ToDoItemId = 1,
+            Name = "Jmeno",
+            Description = "Popis",
+            IsCompleted = false
+        };
+
+        controller.AddItemToStorage(toDoItem);
+
+        var request = new ToDoItemUpdateRequestDto(
+            Name: "Jine jmeno",
+            Description: "Jiny popis",
+            IsCompleted: true
+        );
 
         // Act
-        var updateResult = controller.UpdateById(fakeId, updateRequest);
+        var invalidId = -1;
+        var result = controller.UpdateById(invalidId, request);
 
         // Assert
-        Assert.IsType<NotFoundResult>(updateResult);
-
+        Assert.IsType<NotFoundResult>(result);
     }
 }

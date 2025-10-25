@@ -8,7 +8,7 @@ using ToDoList.Domain.Models;
 [ApiController]
 public class ToDoItemsController : ControllerBase
 {
-    private static readonly List<ToDoItem> items = [];
+    public static List<ToDoItem> items = [];
 
     [HttpPost]
     public ActionResult<ToDoItemGetResponseDto> Create(ToDoItemCreateRequestDto request)
@@ -127,7 +127,7 @@ public class ToDoItemsController : ControllerBase
         items.Add(item);
     }
 
-    public static void ClearStorage()
+    public void ClearStorage()
     {
         items.Clear();
     }

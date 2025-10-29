@@ -109,21 +109,16 @@ public class ToDoItemsController : ControllerBase
         //try to update the item by retrieving it with given id
         try
         {
-            //retrieve the item
-            //var itemIndexToUpdate = items.FindIndex(i => i.ToDoItemId == toDoItemId);
-            int itemIndexToUpdate = context.ToDoItems
-                .AsNoTracking()
-                .ToList()
-                .FindIndex(i => i.ToDoItemId == toDoItemId);
-
-            if (itemIndexToUpdate == -1)
+            var existing = context.ToDoItems.FirstOrDefault(i => i.ToDoItemId == toDoItemId);
+            if (existing == null)
             {
                 return NotFound(); //404
             }
-            updatedItem.ToDoItemId = toDoItemId;
 
-            //items[itemIndexToUpdate] = updatedItem;
-            context.ToDoItems.Update(updatedItem);
+            existing.Name = updatedItem.Name;
+            existing.Description = updatedItem.Description;
+            existing.IsCompleted = updatedItem.IsCompleted;
+
             context.SaveChanges();
         }
         catch (Exception ex)
@@ -171,6 +166,8 @@ public class ToDoItemsController : ControllerBase
 
     public void ClearStorage()
     {
-        items.Clear();
+        //items.Clear();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

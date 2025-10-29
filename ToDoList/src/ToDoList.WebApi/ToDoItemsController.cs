@@ -168,4 +168,9 @@ public class ToDoItemsController : ControllerBase
         context.ToDoItems.Add(item);
         context.SaveChanges();
     }
+
+    public void ClearStorage()
+    {
+        items.Clear();
+    }
 }

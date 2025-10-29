@@ -2,6 +2,7 @@ namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence;
 using ToDoList.WebApi;
 using Xunit;
 
@@ -12,6 +13,9 @@ public class GetTests
     public void Get_AllItems_ReturnsAllItems()
     {
         // Arrange
+        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
+
         var todoItem1 = new ToDoItem
         {
             ToDoItemId = 1,
@@ -26,7 +30,7 @@ public class GetTests
             Description = "Popis2",
             IsCompleted = true
         };
-        var controller = new ToDoItemsController();
+
         controller.ClearStorage();
         controller.AddItemToStorage(todoItem1);
         controller.AddItemToStorage(todoItem2);

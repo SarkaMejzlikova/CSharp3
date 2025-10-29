@@ -2,6 +2,7 @@ namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence;
 using ToDoList.WebApi;
 using Xunit;
 
@@ -12,7 +13,8 @@ public class GetByIdTests
     public void GetById_ValidId_ReturnsItem()
     {
         // Arrange
-        var controller = new ToDoItemsController();
+        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
         controller.ClearStorage();
         var toDoItem = new ToDoItem
         {
@@ -36,13 +38,17 @@ public class GetByIdTests
         Assert.Equal(toDoItem.Description, value.Description);
         Assert.Equal(toDoItem.IsCompleted, value.IsCompleted);
         Assert.Equal(toDoItem.Name, value.Name);
+
+        // Clean up
+        controller.ClearStorage();
     }
 
     [Fact]
     public void GetById_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var controller = new ToDoItemsController();
+        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
         controller.ClearStorage();
         var toDoItem = new ToDoItem
         {
@@ -60,5 +66,8 @@ public class GetByIdTests
 
         // Assert
         Assert.IsType<NotFoundResult>(resultResult);
+
+        // Clean up
+        controller.ClearStorage();
     }
 }

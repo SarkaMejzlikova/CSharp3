@@ -2,6 +2,7 @@ namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
+using ToDoList.Persistence;
 using ToDoList.WebApi;
 using Xunit;
 
@@ -12,8 +13,10 @@ public class PostTests
     public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
-        var controller = new ToDoItemsController();
+        var context = new ToDoItemsContext(connectionString: "Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
         controller.ClearStorage();
+
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
@@ -32,5 +35,8 @@ public class PostTests
         Assert.Equal(request.Description, value.Description);
         Assert.Equal(request.IsCompleted, value.IsCompleted);
         Assert.Equal(request.Name, value.Name);
+
+        // Clean up
+        controller.ClearStorage();
     }
 }

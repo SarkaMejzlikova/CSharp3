@@ -2,6 +2,7 @@ namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence;
 using ToDoList.WebApi;
 using Xunit;
 
@@ -12,7 +13,8 @@ public class DeleteTests
     public void Delete_ValidId_ReturnsNoContent()
     {
         // Arrange
-        var controller = new ToDoItemsController();
+        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
         controller.ClearStorage();
         var toDoItem = new ToDoItem
         {
@@ -29,13 +31,17 @@ public class DeleteTests
 
         // Assert
         Assert.IsType<NoContentResult>(result);
+
+        // Clean up
+        controller.ClearStorage();
     }
 
     [Fact]
     public void Delete_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var controller = new ToDoItemsController();
+        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
+        var controller = new ToDoItemsController(context);
         controller.ClearStorage();
         var toDoItem = new ToDoItem
         {
@@ -53,5 +59,8 @@ public class DeleteTests
 
         // Assert
         Assert.IsType<NotFoundResult>(result);
+
+        // Clean up
+        controller.ClearStorage();
     }
 }

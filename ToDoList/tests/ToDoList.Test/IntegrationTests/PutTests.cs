@@ -15,7 +15,7 @@ public class PutTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context);
+        var controller = new ToDoItemsController(context, null);
         controller.ClearStorage();
 
         var toDoItem = new ToDoItem
@@ -49,7 +49,7 @@ public class PutTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context);
+        var controller = new ToDoItemsController(context, null);
         controller.ClearStorage();
 
         var toDoItem = new ToDoItem

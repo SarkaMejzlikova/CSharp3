@@ -14,7 +14,7 @@ public class GetTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context);
+        var controller = new ToDoItemsController(context, null);
 
         var todoItem1 = new ToDoItem
         {

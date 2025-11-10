@@ -1,4 +1,4 @@
-namespace ToDoList.WebApi.Controllers;
+namespace ToDoList.WebApi;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

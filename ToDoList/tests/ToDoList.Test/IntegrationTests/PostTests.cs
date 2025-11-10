@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Persistence;
 using ToDoList.WebApi;
-using ToDoList.WebApi.Controllers;
 using Xunit;
 
 [Collection("Sequential")]

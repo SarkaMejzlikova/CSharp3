@@ -1,9 +1,10 @@
-namespace ToDoList.Test;
+namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Persistence;
-using ToDoList.WebApi;
+using ToDoList.Persistence.Repositories;
+using ToDoList.WebApi.Controllers;
 using Xunit;
 
 [Collection("Sequential")]
@@ -14,8 +15,8 @@ public class PostTests
     {
         // Arrange
         var context = new ToDoItemsContext(connectionString: "Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var repo = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(null, repo);
 
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
@@ -35,8 +36,5 @@ public class PostTests
         Assert.Equal(request.Description, value.Description);
         Assert.Equal(request.IsCompleted, value.IsCompleted);
         Assert.Equal(request.Name, value.Name);
-
-        // Clean up
-        controller.ClearStorage();
     }
 }

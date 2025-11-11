@@ -3,7 +3,7 @@ namespace ToDoList.Test.UnitTests;
 using NSubstitute;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
-using ToDoList.WebApi;
+using ToDoList.WebApi.Controllers;
 using Xunit;
 using ToDoList.Persistence.Repositories;
 using ToDoList.Domain.Models;

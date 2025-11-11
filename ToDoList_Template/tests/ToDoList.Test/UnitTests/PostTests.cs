@@ -1,23 +1,22 @@
-namespace ToDoList.Test.IntegrationTests;
+namespace ToDoList.Test.UnitTests;
 
+using NSubstitute;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
-using ToDoList.Persistence;
-using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
-using Xunit;
+using ToDoList.Persistence.Repositories;
+using ToDoList.Domain.Models;
+using ToDoList.Test;
 
-[Collection("Sequential")]
 public class PostTests
 {
     [Fact]
     public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
-        var context = new ToDoItemsContext(connectionString: "Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var repo = new ToDoItemsRepository(context);
-        var controller = new ToDoItemsController(null, repo);
+        var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
 
+        var controller = new ToDoItemsController(null, repositoryMock);
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",
             Description: "Popis",
@@ -38,3 +37,4 @@ public class PostTests
         Assert.Equal(request.Name, value.Name);
     }
 }
+

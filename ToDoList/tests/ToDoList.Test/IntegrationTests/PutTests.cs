@@ -1,10 +1,10 @@
-namespace ToDoList.Test;
+namespace ToDoList.Test.IntegrationTests;
 
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
-using ToDoList.WebApi;
+using ToDoList.WebApi.Controllers;
 using Xunit;
 
 [Collection("Sequential")]
@@ -15,7 +15,7 @@ public class PutTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context);
+        var controller = new ToDoItemsController(context, null);
         controller.ClearStorage();
 
         var toDoItem = new ToDoItem
@@ -49,7 +49,7 @@ public class PutTests
     {
         // Arrange
         var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context);
+        var controller = new ToDoItemsController(context, null);
         controller.ClearStorage();
 
         var toDoItem = new ToDoItem

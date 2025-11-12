@@ -14,9 +14,10 @@ public class PostTests
     public void Post_ValidRequest_ReturnsNewItem()
     {
         // Arrange
-        var context = new ToDoItemsContext(connectionString: "Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var repo = new ToDoItemsRepository(context);
-        var controller = new ToDoItemsController(null, repo);
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
 
         var request = new ToDoItemCreateRequestDto(
             Name: "Jmeno",

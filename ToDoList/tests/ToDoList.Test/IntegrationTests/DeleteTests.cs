@@ -3,6 +3,7 @@ namespace ToDoList.Test.IntegrationTests;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 using Xunit;
 
@@ -13,9 +14,14 @@ public class DeleteTests
     public void Delete_ValidId_ReturnsNoContent()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
+
         var toDoItem = new ToDoItem
         {
             ToDoItemId = 1,
@@ -24,7 +30,8 @@ public class DeleteTests
             IsCompleted = false
         };
 
-        controller.AddItemToStorage(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var result = controller.DeleteById(toDoItem.ToDoItemId);
@@ -32,17 +39,26 @@ public class DeleteTests
         // Assert
         Assert.IsType<NoContentResult>(result);
 
-        // Clean up
-        controller.ClearStorage();
+        // Verify item was deleted
+        var deletedItem = context.ToDoItems.Find(toDoItem.ToDoItemId);
+        Assert.Null(deletedItem);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 
     [Fact]
     public void Delete_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
+
         var toDoItem = new ToDoItem
         {
             ToDoItemId = 1,
@@ -51,7 +67,8 @@ public class DeleteTests
             IsCompleted = false
         };
 
-        controller.AddItemToStorage(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var invalidId = -1;
@@ -60,7 +77,7 @@ public class DeleteTests
         // Assert
         Assert.IsType<NotFoundResult>(result);
 
-        // Clean up
-        controller.ClearStorage();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

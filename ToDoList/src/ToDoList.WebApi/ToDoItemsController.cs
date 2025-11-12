@@ -11,14 +11,11 @@ using ToDoList.Persistence.Repositories;
 [ApiController]
 public class ToDoItemsController : ControllerBase
 {
-    //private static readonly List<ToDoItem> items = []; // již není potřeba
-    private readonly ToDoItemsContext context;
     private readonly IRepository<ToDoItem> repository;
 
     // constructor
-    public ToDoItemsController(ToDoItemsContext context, IRepository<ToDoItem> repository)
+    public ToDoItemsController(IRepository<ToDoItem> repository)
     {
-        this.context = context;
         this.repository = repository;
     }
 
@@ -48,13 +45,11 @@ public class ToDoItemsController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemGetResponseDto>> Read()
     {
-        List<ToDoItem> itemsToGet;
+        IEnumerable<ToDoItem> itemsToGet;
         try
         {
             //itemsToGet = items;
-            itemsToGet = context.ToDoItems
-                .AsNoTracking()
-                .ToList();
+            itemsToGet = repository.ReadAll();
         }
         catch (Exception ex)
         {
@@ -75,9 +70,7 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //itemToGet = items.Find(i => i.ToDoItemId == toDoItemId);
-            itemToGet = context.ToDoItems
-                .AsNoTracking()
-                .FirstOrDefault(i => i.ToDoItemId == toDoItemId);
+            itemToGet = repository.ReadById(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -95,21 +88,18 @@ public class ToDoItemsController : ControllerBase
     {
         //map to Domain object as soon as possible
         var updatedItem = request.ToDomain();
+        updatedItem.ToDoItemId = toDoItemId;
 
         //try to update the item by retrieving it with given id
         try
         {
-            var existing = context.ToDoItems.FirstOrDefault(i => i.ToDoItemId == toDoItemId);
-            if (existing == null)
+            var itemToUpdate = repository.ReadById(toDoItemId);
+            if (itemToUpdate == null)
             {
                 return NotFound(); //404
             }
 
-            existing.Name = updatedItem.Name;
-            existing.Description = updatedItem.Description;
-            existing.IsCompleted = updatedItem.IsCompleted;
-
-            context.SaveChanges();
+            repository.Update(updatedItem);
         }
         catch (Exception ex)
         {
@@ -127,16 +117,14 @@ public class ToDoItemsController : ControllerBase
         try
         {
             //var itemToDelete = items.Find(i => i.ToDoItemId == toDoItemId);
-            var itemToDelete = context.ToDoItems
-                .FirstOrDefault(i => i.ToDoItemId == toDoItemId);
+            var itemToDelete = repository.ReadById(toDoItemId);
 
             if (itemToDelete is null)
             {
                 return NotFound(); //404
             }
             //items.Remove(itemToDelete);
-            context.ToDoItems.Remove(itemToDelete);
-            context.SaveChanges();
+            repository.DeleteById(toDoItemId);
         }
         catch (Exception ex)
         {
@@ -145,19 +133,5 @@ public class ToDoItemsController : ControllerBase
 
         //respond to client
         return NoContent(); //204
-    }
-
-    public void AddItemToStorage(ToDoItem item)
-    {
-        //items.Add(item);
-        context.ToDoItems.Add(item);
-        context.SaveChanges();
-    }
-
-    public void ClearStorage()
-    {
-        //items.Clear();
-        context.ToDoItems.RemoveRange(context.ToDoItems);
-        context.SaveChanges();
     }
 }

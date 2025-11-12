@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 using Xunit;
 
@@ -14,19 +15,20 @@ public class PutTests
     public void Put_ValidId_ReturnsNoContent()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
 
         var toDoItem = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno",
             Description = "Popis",
             IsCompleted = false
         };
 
-        controller.AddItemToStorage(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         var request = new ToDoItemUpdateRequestDto(
             Name: "Jine jmeno",
@@ -40,17 +42,21 @@ public class PutTests
         // Assert
         Assert.IsType<NoContentResult>(result);
 
-        // Clean up
-        controller.ClearStorage();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 
     [Fact]
     public void Put_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
 
         var toDoItem = new ToDoItem
         {
@@ -60,7 +66,8 @@ public class PutTests
             IsCompleted = false
         };
 
-        controller.AddItemToStorage(toDoItem);
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         var request = new ToDoItemUpdateRequestDto(
             Name: "Jine jmeno",
@@ -75,7 +82,7 @@ public class PutTests
         // Assert
         Assert.IsType<NotFoundResult>(result);
 
-        // Clean up
-        controller.ClearStorage();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

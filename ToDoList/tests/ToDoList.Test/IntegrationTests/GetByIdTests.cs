@@ -3,6 +3,7 @@ namespace ToDoList.Test.IntegrationTests;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 using Xunit;
 
@@ -13,9 +14,14 @@ public class GetByIdTests
     public void GetById_ValidId_ReturnsItem()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
+
         var toDoItem = new ToDoItem
         {
             ToDoItemId = 1,
@@ -23,7 +29,9 @@ public class GetByIdTests
             Description = "Popis",
             IsCompleted = false
         };
-        controller.AddItemToStorage(toDoItem);
+
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var result = controller.ReadById(toDoItem.ToDoItemId);
@@ -40,16 +48,22 @@ public class GetByIdTests
         Assert.Equal(toDoItem.Name, value.Name);
 
         // Clean up
-        controller.ClearStorage();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 
     [Fact]
     public void GetById_InvalidId_ReturnsNotFound()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
-        controller.ClearStorage();
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
+
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
+
         var toDoItem = new ToDoItem
         {
             ToDoItemId = 1,
@@ -57,7 +71,9 @@ public class GetByIdTests
             Description = "Popis",
             IsCompleted = false
         };
-        controller.AddItemToStorage(toDoItem);
+
+        context.ToDoItems.Add(toDoItem);
+        context.SaveChanges();
 
         // Act
         var invalidId = -1;
@@ -68,6 +84,7 @@ public class GetByIdTests
         Assert.IsType<NotFoundResult>(resultResult);
 
         // Clean up
-        controller.ClearStorage();
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

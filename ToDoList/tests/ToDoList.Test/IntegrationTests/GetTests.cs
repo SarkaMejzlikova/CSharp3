@@ -3,6 +3,7 @@ namespace ToDoList.Test.IntegrationTests;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi.Controllers;
 using Xunit;
 
@@ -13,27 +14,31 @@ public class GetTests
     public void Get_AllItems_ReturnsAllItems()
     {
         // Arrange
-        var context = new ToDoItemsContext("Data Source=../../../IntegrationTests/data/localdb_test.db");
-        var controller = new ToDoItemsController(context, null);
+        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        using var context = new ToDoItemsContext(connectionString);
+        var repository = new ToDoItemsRepository(context);
+        var controller = new ToDoItemsController(repository);
 
-        var todoItem1 = new ToDoItem
+        var toDoItem1 = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno1",
             Description = "Popis1",
             IsCompleted = false
         };
-        var todoItem2 = new ToDoItem
+        var toDoItem2 = new ToDoItem
         {
-            ToDoItemId = 2,
             Name = "Jmeno2",
             Description = "Popis2",
             IsCompleted = true
         };
 
-        controller.ClearStorage();
-        controller.AddItemToStorage(todoItem1);
-        controller.AddItemToStorage(todoItem2);
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
+
+        context.ToDoItems.Add(toDoItem1);
+
+        context.ToDoItems.Add(toDoItem2);
+        context.SaveChanges(); // save changes stačí jenom jednou na konci
 
         // Act
         var result = controller.Read();
@@ -43,9 +48,13 @@ public class GetTests
         Assert.NotNull(value);
 
         var firstToDo = value.First();
-        Assert.Equal(todoItem1.ToDoItemId, firstToDo.Id);
-        Assert.Equal(todoItem1.Name, firstToDo.Name);
-        Assert.Equal(todoItem1.Description, firstToDo.Description);
-        Assert.Equal(todoItem1.IsCompleted, firstToDo.IsCompleted);
+        Assert.Equal(toDoItem1.ToDoItemId, firstToDo.Id);
+        Assert.Equal(toDoItem1.Name, firstToDo.Name);
+        Assert.Equal(toDoItem1.Description, firstToDo.Description);
+        Assert.Equal(toDoItem1.IsCompleted, firstToDo.IsCompleted);
+
+        // Clean up
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

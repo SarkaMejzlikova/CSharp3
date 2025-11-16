@@ -1,5 +1,6 @@
 namespace ToDoList.Persistence.Repositories;
 
+using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.Models;
 
 public class ToDoItemsRepository : IRepository<ToDoItem>
@@ -17,7 +18,27 @@ public class ToDoItemsRepository : IRepository<ToDoItem>
         context.SaveChanges();
     }
 
+    public IEnumerable<ToDoItem> ReadAll()
+    {
+        return context.ToDoItems.ToList();
+    }
 
+    public ToDoItem? ReadById(int id)
+    {
+        return context.ToDoItems.Find(id);
+    }
 
+    public void Update(ToDoItem item)
+    {
+        var foundItem = context.ToDoItems.Find(item.ToDoItemId) ?? throw new ArgumentOutOfRangeException($"ToDo item with ID {item.ToDoItemId} not found.");
+        context.Entry(foundItem).CurrentValues.SetValues(item);
+        context.SaveChanges();
+    }
 
+    public void DeleteById(int id)
+    {
+        var item = context.ToDoItems.Find(id) ?? throw new ArgumentOutOfRangeException($"ToDo item with ID {id} not found.");
+        context.ToDoItems.Remove(item);
+        context.SaveChanges();
+    }
 }

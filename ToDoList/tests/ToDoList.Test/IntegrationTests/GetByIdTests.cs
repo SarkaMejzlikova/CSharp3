@@ -47,6 +47,7 @@ public class GetByIdTests
         Assert.Equal(toDoItem.IsCompleted, value.IsCompleted);
         Assert.Equal(toDoItem.Name, value.Name);
 
+        // Clean up
         context.ToDoItems.RemoveRange(context.ToDoItems);
         context.SaveChanges();
     }
@@ -82,6 +83,7 @@ public class GetByIdTests
         // Assert
         Assert.IsType<NotFoundResult>(resultResult);
 
+        // Clean up
         context.ToDoItems.RemoveRange(context.ToDoItems);
         context.SaveChanges();
     }

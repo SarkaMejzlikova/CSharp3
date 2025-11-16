@@ -42,6 +42,7 @@ public class PutTests
         // Assert
         Assert.IsType<NoContentResult>(result);
 
+        // Clean up
         context.ToDoItems.RemoveRange(context.ToDoItems);
         context.SaveChanges();
     }
@@ -60,7 +61,6 @@ public class PutTests
 
         var toDoItem = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno",
             Description = "Popis",
             IsCompleted = false
@@ -82,6 +82,7 @@ public class PutTests
         // Assert
         Assert.IsType<NotFoundResult>(result);
 
+        // Clean up
         context.ToDoItems.RemoveRange(context.ToDoItems);
         context.SaveChanges();
     }

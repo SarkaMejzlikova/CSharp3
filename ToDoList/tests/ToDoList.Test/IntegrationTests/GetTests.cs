@@ -21,14 +21,12 @@ public class GetTests
 
         var toDoItem1 = new ToDoItem
         {
-            ToDoItemId = 1,
             Name = "Jmeno1",
             Description = "Popis1",
             IsCompleted = false
         };
         var toDoItem2 = new ToDoItem
         {
-            ToDoItemId = 2,
             Name = "Jmeno2",
             Description = "Popis2",
             IsCompleted = true
@@ -38,10 +36,9 @@ public class GetTests
         context.SaveChanges();
 
         context.ToDoItems.Add(toDoItem1);
-        context.SaveChanges();
 
         context.ToDoItems.Add(toDoItem2);
-        context.SaveChanges();
+        context.SaveChanges(); // save changes stačí jenom jednou na konci
 
         // Act
         var result = controller.Read();
@@ -55,5 +52,9 @@ public class GetTests
         Assert.Equal(toDoItem1.Name, firstToDo.Name);
         Assert.Equal(toDoItem1.Description, firstToDo.Description);
         Assert.Equal(toDoItem1.IsCompleted, firstToDo.IsCompleted);
+
+        // Clean up
+        context.ToDoItems.RemoveRange(context.ToDoItems);
+        context.SaveChanges();
     }
 }

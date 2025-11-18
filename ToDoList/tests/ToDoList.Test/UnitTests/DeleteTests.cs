@@ -14,7 +14,7 @@ public class DeleteTests
 {
 
     [Fact]
-    public void Delete_ValidItemId_ReturnsNoContent()
+    public void Delete_DeleteByIdValidItemId_ReturnsNoContent()
     {
         //Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -33,7 +33,7 @@ public class DeleteTests
     }
 
     [Fact]
-    public void Delete_InvalidItemId_ReturnsNotFound()
+    public void Delete_DeleteByIdInvalidItemId_ReturnsNotFound()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -51,7 +51,7 @@ public class DeleteTests
     }
 
     [Fact]
-    public void Delete_AnyItemIdExceptionOccurredDuringReadById_ReturnsInternalServerError()
+    public void Delete_DeleteByIdUnhandledExceptionReadById_ReturnsInternalServerError()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();
@@ -69,7 +69,7 @@ public class DeleteTests
     }
 
     [Fact]
-    public void Delete_AnyItemIdExceptionOccurredDuringDeleteById_ReturnsInternalServerError()
+    public void Delete_DeleteByIdUnhandledExceptionDeleteById_ReturnsInternalServerError()
     {
         // Arrange
         var repositoryMock = Substitute.For<IRepository<ToDoItem>>();

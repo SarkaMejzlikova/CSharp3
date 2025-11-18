@@ -1,0 +1,29 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<b>@GetValue()</b>
+
+<hr />
+
+<p>Hodnota: @counter</p>
+<button @onclick="IncerementCounter">Increment Counter</button>
+
+@code {
+    private int counter = 1;
+
+    private void IncerementCounter()
+    {
+        counter++;
+    }
+
+    private string GetValue()
+    {
+        return Guid.NewGuid().ToString();
+    }
+}

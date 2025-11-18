@@ -1,0 +1,42 @@
+﻿@using ToDoList.Frontend.Models
+
+@page "/Dashboard"
+<PageTitle>Dashboard</PageTitle>
+
+<div>
+<h2>ToDo items dashboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Název</th>
+                <th>Popis</th>
+                <th>Dokončeno</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@(item.IsCompleted ? "Dokonceno" : "Nedokončeno")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code{
+
+private List<ToDoItemView> items = new List<ToDoItemView>()
+{
+    new ToDoItemView { Id = 1, Name = "Test1", Description = "Test description1", IsCompleted = false},
+    new ToDoItemView { Id = 2, Name = "Test2", Description = "Test description2", IsCompleted = true},
+    new ToDoItemView { Id = 3, Name = "Test3", Description = "Test description3", IsCompleted = false},
+    new ToDoItemView { Id = 4, Name = "Test4", Description = "Test description4", IsCompleted = true},
+};
+
+}

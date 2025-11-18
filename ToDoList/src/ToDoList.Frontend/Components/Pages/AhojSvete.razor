@@ -1,0 +1,26 @@
+﻿@page "/ahojSvete"
+
+<PageTitle>AhojSvete</PageTitle>
+
+<div class="container">
+
+    <head>
+        <h1>@AhojSveteVypisTextu()</h1>
+    </head>
+
+    <main>
+        <p>Text prvního odstavce</p>
+        <p>Text druhého odstavce</p>
+    </main>
+
+    <footer>
+        <small>paticka</small>
+    </footer>
+</div>
+
+@code {
+    private string AhojSveteVypisTextu()
+    {
+        return "Ahoj svete v hlavicce, vypsano z funkce.";
+    }
+}
